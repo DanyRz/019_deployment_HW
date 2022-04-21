@@ -40,7 +40,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
       - name: Run pytests
-        run: pytest test_functions.py
+        run: pytest HW_019_gunicorn/main/test_functions.py
 
   build:
     runs-on: ubuntu-latest
