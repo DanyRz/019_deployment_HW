@@ -88,5 +88,5 @@ jobs:
 
       - name: Deploy new app version
         run: aws elasticbeanstalk update-environment --environment-name ${{ env.EB_ENVIRONMENT_NAME }} --version-label "Ver-${{ github.sha }}" \
-	      
+  
 
