@@ -1,6 +1,6 @@
 from flask import Flask
 
-from main.functions import square_root, circle_area
+from HW_019_gunicorn.main.functions import square_root, circle_area
 
 
 def create_app():
