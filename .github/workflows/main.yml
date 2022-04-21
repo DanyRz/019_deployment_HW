@@ -11,8 +11,11 @@ on:
   push:
     branches:
       -master
-  check_run:
-    types: [ rerequested ]
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Notes"
+ 
 
 
 jobs:
