@@ -1,6 +1,6 @@
 from pytest import approx
 
-from main.functions import square_root, circle_area
+from functions import square_root, circle_area
 
 
 def test_math_functions():
