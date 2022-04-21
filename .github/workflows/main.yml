@@ -3,6 +3,7 @@ name: HW_019_pipeline_to_AWS
 env:
   EB_PACKAGE_S3_BUCKET_NAME: "homework-19-bucket"
   EB_APPLICATION_NAME: "hw-019-app"
+  EB_ENVIRONMENT_NAME: "Hw019app-env"
   DEPLOY_PACKAGE_NAME: "flask_app_019_${{ github.sha }}.zip"
   AWS_REGION_NAME: "eu-central-1"
 
@@ -11,6 +12,11 @@ on:
   push:
     branches:
       -master
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Notes"
+ 
 
 
 jobs:
@@ -26,16 +32,16 @@ jobs:
           python-version: "3.8"
       - name: Install dependencies
         run: |
-          python -n pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: flake8 check
         run: |
-          flake8 app --count -- select=E9,F63,F7,F82,W391 --show-source --statistics
-          flake8 app --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
       - name: Run pytests
-        run: pytest main
+        run: pytest HW_019_gunicorn/main/test_functions.py
 
   build:
     runs-on: ubuntu-latest
@@ -53,7 +59,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-secret-key-id: ${{ secrets.MY_AWS_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.MY_AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.MY_AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION_NAME }}
 
@@ -71,7 +77,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-secret-key-id: ${{ secrets.MY_AWS_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.MY_AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.MY_AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION_NAME }}
 
@@ -80,7 +86,7 @@ jobs:
         run: |
           aws elasticbeanstalk create-application-version \
           --application-name ${{ env.EB_APPLICATION_NAME }} \
-          --source-bundle S3Bucket="${{ env.EB_PACKAGE_S3_BUCKET_NAME }}", S3Key="${{ env.DEPLOY_PACKAGE_NAME }}" \
+          --source-bundle S3Bucket="${{ env.EB_PACKAGE_S3_BUCKET_NAME }}",S3Key="${{ env.DEPLOY_PACKAGE_NAME }}" \
           --version-label "Ver-${{ github.sha }}" \
           --description "CommitSHA-${{ github.sha }}"
 
